@@ -25,7 +25,7 @@ Derleme
         tar -xvf ${name}-${version}.tar.gz
     }
     setup(){
-        ${name}-${version}/configure --prefix=/usr --libdir=/usr/lib64 --sysconfdir=/etc --exec-prefix=/ --bindir=/bin --with-rootprefix=/ --with-rootrundir=/run --with-rootlibexecdir=/usr/lib64/udev --enable-split-usr --disable-selinux --enable-kmod
+        ${name}-${version}/configure --prefix=/usr --libdir=/lib64 --sysconfdir=/etc --exec-prefix=/ --bindir=/sbin --with-rootprefix=/ --with-rootrundir=/run --with-rootlibexecdir=/lib64/udev --enable-split-usr --disable-selinux --enable-kmod
     }
     build(){
         make
