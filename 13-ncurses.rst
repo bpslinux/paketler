@@ -25,14 +25,14 @@ Derleme
         tar -xvf ${name}-${version}.tar.gz
     }
     setup(){
-            ${name}-${version}/configure --prefix=/usr --libdir=/usr/lib64 --with-shared --disable-tic-depends --with-versioned-syms  --enable-widec --with-cxx-binding --with-cxx-shared --enable-pc-files --without-ada
+            ${name}-${version}/configure --prefix=/usr --libdir=/lib64 --with-shared --disable-tic-depends --with-versioned-syms  --enable-widec --with-cxx-binding --with-cxx-shared --enable-pc-files --without-ada
     }
     build(){
             make
     }
     package(){
             make install DESTDIR=$HOME/distro/rootfs
-            cd $HOME/distro/rootfs/lib
+            cd $HOME/distro/rootfs/lib64
             ln -s libncursesw.so.6 libtinfow.so.6
             ln -s libncursesw.so.6 libtinfo.so.6
             ln -s libncursesw.so.6 libncurses.so.6
