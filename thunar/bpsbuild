@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+name="thunar"
+version="4.19.3"
+description="Modern, fast and easy-to-use file manager for Xfce"
+source="https://archive.xfce.org/src/xfce/thunar/${version%.*}/thunar-${version}.tar.bz2"
+depends="exo,libxfce4ui,libxfce4util,desktop-file-utils,libexif,libnotify,libpng,libgudev,libpcre2"
+builddepend="intltool,xfce4-panel,gobject-introspection"
+group="xfce.base"
+
+setup(){
+    cd $SOURCEDIR
+    ./configure --prefix=/usr \
+        --libdir=/usr/lib64 \
+        --enable-gio-unix \
+		--enable-gudev \
+		--enable-notifications \
+		--enable-exif \
+		--enable-gtk-doc \
+		--disable-debug
+}
+build(){
+    make
+}
+
+package(){
+    make install DESTDIR=$DESTDIR
+    rm -r $DESTDIR/usr/lib/systemd
+}

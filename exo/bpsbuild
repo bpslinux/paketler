@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+name="exo"
+version="4.19.0"
+description="Application library for the Xfce desktop environment"
+source="https://archive.xfce.org/src/xfce/exo/${version%.*}/exo-${version}.tar.bz2"
+depends="libxfce4ui,libSM,libICE"
+builddepend="intltool"
+group="xfce.base"
+
+setup(){
+    cd $SOURCEDIR
+    ./configure --prefix=/usr \
+        --libdir=/usr/lib64 \
+        --sysconfdir=/etc \
+		--sbindir=/usr/bin \
+		--localstatedir=/var \
+		--disable-debug 
+
+
+}
+build(){
+    make
+}
+
+package(){
+    make install DESTDIR=$DESTDIR
+}

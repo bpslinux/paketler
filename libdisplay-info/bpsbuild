@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+name="libdisplay-info"
+version="0.2.0"
+description="EDID and DisplayID library"
+source="https://gitlab.freedesktop.org/emersion/libdisplay-info/-/archive/${version}/libdisplay-info-${version}.tar.gz"
+depends="gdk-pixbuf2,glib,gtk3,libwnck3,libX11,wayland"
+builddepend="hwdata,meson,ninja,python"
+group="media.libs"
+
+setup(){
+    cd $SOURCEDIR
+    meson setup $BUILDDIR \
+        --sysconfdir=/etc \
+        --prefix=/usr \
+        --libdir=/usr/lib64 \
+        -Ddefault_library=both
+}
+build(){
+    meson compile -C $BUILDDIR
+}
+
+package(){
+    DESTDIR="$DESTDIR" meson install -C $BUILDDIR
+}

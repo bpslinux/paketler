@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+name="xfce4-session"
+version="4.19.2"
+description="Xfce's session manager"
+source="https://archive.xfce.org/src/xfce/xfce4-session/${version%.*}/xfce4-session-${version}.tar.bz2"
+depends="libxfce4ui,libwnck3,xfconf,xorg-iceauth"
+builddepend="intltool"
+group="xfce.base"
+
+setup(){
+	cp -prvf $PACKAGEDIR/xfce-polkit-gnome-authentication-agent-1.desktop /tmp/bps/build/
+    cd $SOURCEDIR
+    autoreconf -fvi
+    ./configure --prefix=/usr \
+        --libdir=/usr/lib64 \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-debug
+
+
+}
+build(){
+    make
+}
+
+package(){
+    make install DESTDIR=$DESTDIR
+    install -d "$DESTDIR/etc/xdg/autostart"
+  	cp "../xfce-polkit-gnome-authentication-agent-1.desktop" "$DESTDIR/etc/xdg/autostart/"
+
+}

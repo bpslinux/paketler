@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+name="libxfce4windowing"
+version="4.19.4"
+description="Windowing concept abstraction library for X11 and Wayland"
+source="https://archive.xfce.org/src/xfce/libxfce4windowing/${version%.*}/libxfce4windowing-${version}.tar.bz2"
+depends="gdk-pixbuf2,glib,gtk3,libwnck3,libX11,wayland"
+builddepend="gobject-introspection,gtk-doc"
+group="xfce.base"
+
+setup(){
+    cd $SOURCEDIR
+    ./configure --prefix=/usr \
+        --libdir=/usr/lib64 \
+        --sysconfdir=/etc \
+		--enable-gtk-doc \
+		--enable-wayland \
+		--enable-x11 \
+		--disable-debug
+
+
+}
+build(){
+    make
+}
+
+package(){
+    make install DESTDIR=$DESTDIR
+}

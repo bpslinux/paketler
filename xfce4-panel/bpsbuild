@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+name="xfce4-panel"
+version="4.19.4"
+description="Panel for the Xfce desktop environment"
+source="https://archive.xfce.org/src/xfce/xfce4-panel/${version%.*}/xfce4-panel-${version}.tar.bz2"
+depends="exo,garcon,libxfce4ui,xfconf,libwnck3,cairo,libdbusmenu"
+builddepend="gobject-introspection,intltool,vala"
+group="xfce.base"
+
+setup(){
+    cd $SOURCEDIR
+    ./configure --prefix=/usr \
+        --libdir=/usr/lib64 \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-debug
+
+}
+build(){
+    make
+}
+
+package(){
+    make install DESTDIR=$DESTDIR
+}

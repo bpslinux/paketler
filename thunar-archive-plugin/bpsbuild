@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+name="thunar-archive-plugin"
+version="0.5.2"
+description="Adds archive operations to the Thunar file context menus"
+source="https://archive.xfce.org/src/thunar-plugins/thunar-archive-plugin/${version%.*}/thunar-archive-plugin-${version}.tar.bz2"
+depends="thunar"
+builddepend="intltool,xfce4-dev-tools"
+group="xfce.base"
+
+setup(){
+    cd $SOURCEDIR
+    ./configure --prefix=/usr \
+        --libdir=/usr/lib64 \
+        --sysconfdir=/etc \
+		--libexecdir=/usr/lib64 \
+		--localstatedir=/var \
+		--disable-static
+
+}
+build(){
+    make
+}
+
+package(){
+    make install DESTDIR=$DESTDIR
+}

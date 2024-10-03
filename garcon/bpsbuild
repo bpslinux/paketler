@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+name="garcon"
+version="4.19.1"
+description="Freedesktop.org compliant menu library"
+source="https://archive.xfce.org/src/xfce/garcon/${version%.*}/garcon-${version}.tar.bz2"
+depends="libxfce4ui"
+builddepend="intltool,xfce4-dev-tools,python"
+group="xfce.base"
+
+setup(){
+    cd $SOURCEDIR
+    ./configure --prefix=/usr \
+        --libdir=/usr/lib64 \
+        --sysconfdir=/etc \
+		--localstatedir=/var \
+		--enable-gtk-doc \
+		--disable-debug
+
+
+}
+build(){
+    make
+}
+
+package(){
+    make install DESTDIR=$DESTDIR
+}

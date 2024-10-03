@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+name="libxfce4util"
+version="4.19.3"
+description="Basic utility non-GUI functions for Xfce"
+source="https://archive.xfce.org/src/xfce/libxfce4util/${version%.*}/libxfce4util-${version}.tar.bz2"
+depends="glib"
+builddepend="gobject-introspection,intltool,vala,xfce4-dev-tools"
+group="xfce.base"
+
+setup(){
+    cd $SOURCEDIR
+    autoreconf -fvi
+    ./configure --prefix=/usr \
+        --libdir=/usr/lib64 \
+        --sysconfdir=/etc \
+		--sbindir=/usr/bin \
+		--localstatedir=/var \
+		--enable-gtk-doc \
+		--disable-debug 
+
+
+}
+build(){
+    make
+}
+
+package(){
+    make install DESTDIR=$DESTDIR
+}

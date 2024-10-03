@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+name="xfce4-dev-tools"
+version="4.19.2"
+description="Xfce developer tools"
+source="https://archive.xfce.org/src/xfce/xfce4-dev-tools/${version%.*}/xfce4-dev-tools-${version}.tar.bz2"
+depends="gtk-doc,intltool"
+builddepend="libxslt"
+group="xfce.base"
+
+setup(){
+    cd $SOURCEDIR
+    autoreconf -fvi
+    ./configure --prefix=/usr \
+        --libdir=/usr/lib64 \
+        --sysconfdir=/etc \
+        --disable-static \
+		--localstatedir=/var
+
+}
+build(){
+    make
+}
+
+package(){
+    make install DESTDIR=$DESTDIR
+}

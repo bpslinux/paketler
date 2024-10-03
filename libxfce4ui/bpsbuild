@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+name="libxfce4ui"
+version="4.19.5"
+description="Widgets library for the Xfce desktop environment"
+source="https://archive.xfce.org/src/xfce/libxfce4ui/${version%.*}/libxfce4ui-${version}.tar.bz2"
+depends="gtk3,xfconf,libxfce4util"
+builddepend="gobject-introspection,intltool,vala"
+group="xfce.base"
+
+setup(){
+    cd $SOURCEDIR
+    ./configure --prefix=/usr \
+        --libdir=/usr/lib64 \
+        --sysconfdir=/etc \
+		--sbindir=/usr/bin \
+		--localstatedir=/var \
+		--disable-debug 
+
+
+}
+build(){
+    make
+}
+
+package(){
+    make install DESTDIR=$DESTDIR
+}
