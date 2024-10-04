@@ -9,6 +9,7 @@ group="xfce.base"
 
 setup(){
     cd $SOURCEDIR
+    autoreconf -fvi
     ./configure --prefix=/usr \
         --libdir=/usr/lib64 \
         --sysconfdir=/etc \

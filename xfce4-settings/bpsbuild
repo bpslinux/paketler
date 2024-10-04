@@ -8,7 +8,10 @@ builddepend="intltool"
 group="xfce.base"
 
 setup(){
+	cp -prvf $PACKAGEDIR/default-xsettings-xml.patch /tmp/bps/build/
     cd $SOURCEDIR
+    patch -Np1 -i ../default-xsettings-xml.patch
+    
     ./configure --prefix=/usr \
         --libdir=/usr/lib64 \
 		--sysconfdir=/etc \

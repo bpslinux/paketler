@@ -9,10 +9,13 @@ group="xfce.base"
 
 setup(){
     cd $SOURCEDIR
+    autoreconf -fvi
     ./configure --prefix=/usr \
         --libdir=/usr/lib64 \
 		--sysconfdir=/etc \
 		--localstatedir=/var \
+		--enable-gio-unix \
+		--disable-gtk-doc \
 		--disable-debug
 
 }

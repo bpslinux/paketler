@@ -13,7 +13,6 @@ setup(){
     ./configure --prefix=/usr \
         --libdir=/usr/lib64 \
         --sysconfdir=/etc \
-        --disable-static \
 		--localstatedir=/var
 
 }
