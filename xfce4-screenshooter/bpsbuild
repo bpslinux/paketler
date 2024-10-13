@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+name="xfce4-screenshooter"
+release="1"
+version="1.11.1"
+url="https://docs.xfce.org/apps/xfce4-screenshooter/start"
+description="An application to take screenshots"
+source=("https://archive.xfce.org/src/apps/xfce4-screenshooter/${version%.*}/xfce4-screenshooter-${version}.tar.bz2")
+depends="xfce4-panel,libsoup3,hicolor-icon-theme"
+builddepend="intltool,python"
+group="xfce.extra"
+
+setup(){
+	cd $SOURCEDIR
+    ./configure --prefix=/usr \
+        --libdir=/usr/lib64/
+}
+
+build(){
+    make
+}
+
+package(){
+    make DESTDIR="$DESTDIR" install
+}
+
