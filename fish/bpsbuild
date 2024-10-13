@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+name="fish"
+version="3.7.1"
+description="Smart and user friendly shell intended mostly for interactive use"
+source="https://github.com/fish-shell/fish-shell/releases/download/${version}/fish-${version}.tar.xz"
+depends="openssl"
+group="net.print"
+
+
+setup(){
+	cp -prvf $PACKAGEDIR/files/ /tmp/bps/build/
+	cd $SOURCEDIR
+	patch -Np1 -i ../files/sphinx-no-parallel.patch
+	
+    cmake -B $BUILDDIR -G Ninja \
+    	-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=/usr/lib64 \
+        -DBUILD_SHARED_LIBS=True \
+        -DCMAKE_INSTALL_SYSCONFDIR=/etc \
+        -DFISH_USE_SYSTEM_PCRE2=true \
+        -DBUILD_DOCS=false
+ 
+}
+
+build(){
+    cmake --build $BUILDDIR
+}
+
+package(){
+   DESTDIR=$DESTDIR cmake --install $BUILDDIR
+}
+
