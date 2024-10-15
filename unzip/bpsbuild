@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+name="unzip"
+version="6.0"
+description="For extracting and viewing files in .zip archives"
+source="https://downloads.sourceforge.net/infozip/unzip60.tar.gz"
+depends="bzip2"
+builddepend=""
+groups="app.arch"
+
+setup()
+{
+	cp -prvf $PACKAGEDIR/files/ /tmp/bps/build/
+	cd $SOURCEDIR
+	patch -Np1 -i ../files/unzip-6.0_CVE-2021-4217.patch
+	patch -Np1 -i ../files/28-cve-2022-0529-and-cve-2022-0530.patch
+	
+}
+build()
+{
+	make -f unix/Makefile prefix=/usr generic
+}
+
+package(){
+    make -f unix/Makefile prefix=$DESTDIR/usr install
+	install -Dm644 LICENSE "${DESTDIR}/usr/share/licenses/${name}/LICENSE"
+}
+
+
