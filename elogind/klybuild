@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+version="252.9"
+name="elogind"
+depends="acl,attr,audit,libcap-ng,libcap,dbus,pam,py3-jinja"
+description="Düşük seviyeli piksel manipülasyon rutinleri"
+source="https://github.com/elogind/elogind/archive/refs/tags/v${version}.tar.gz"
+groups="x11.libs"
+
+# Paketin yükleneceği tasarlanan sistem konumu
+DESTDIR="$HOME/distro/rootfs"
+# Derleme konumu
+ROOTBUILDDIR="/tmp/kly/build"
+# Derleme yapılan paketin derleme konumun
+BUILDDIR="/tmp/kly/build/build-${name}-${version}"
+# paketin derleme talimatının verildiği konum
+PACKAGEDIR=$(pwd)
+# Paketin kaynak kodlarının olduğu konum
+SOURCEDIR="/tmp/kly/build/${name}-${version}"
+# initsetup
+# derleme dizini yoksa oluşturuluyor
+mkdir -p $ROOTBUILDDIR
+# içeriği temizleniyor
+rm -rf $ROOTBUILDDIR/*
+cd $ROOTBUILDDIR #dizinine geçiyoruz
+wget --no-check-certificate ${source}
+# isimde boşluk varsa silme işlemi yapılıyor
+for f in *\ *; do mv "$f" "${f// /}"; done
+dowloadfile=$(ls|head -1)
+filetype=$(file -b --extension $dowloadfile|cut -d'/' -f1)
+if [ "${filetype}" == "???" ]; then unzip ${dowloadfile}; else tar -xvf ${dowloadfile};fi
+director=$(find ./* -maxdepth 0 -type d)
+directorname=$(basename ${director})
+if [ "${directorname}" != "${name}-${version}" ]; then mv $directorname ${name}-${version};fi
+mkdir -p $BUILDDIR && mkdir -p $DESTDIR && cd $SOURCEDIR
+# setup
+cp -prfv $PACKAGEDIR/elogind/files/ /tmp/kly/build/
+
+meson setup $BUILDDIR --prefix=/usr --libdir=/usr/lib64/\
+        -Dudevrulesdir=/usr/lib64/udev/rules.d \
+        -Dcgroup-controller=elogind \
+        -Dhalt-path=/sbin/halt \
+        -Dreboot-path=/sbin/reboot \
+        -Dpoweroff-path=/sbin/poweroff \
+        -Drootlibexecdir=/usr/libexec/elogind \
+        -Ddefault-hierarchy=hybrid \
+        -Ddefault-kill-user-processes=true \
+        -Dpam=true \
+        -Dpamconfdir=/etc/pam.d \
+	-Dpamlibdir=/usr/lib64/security \
+        -Dselinux=false \
+        -Daudit=true \
+        -Defi=false \
+        -Dpolkit=true
+# build
+ninja -C $BUILDDIR
+# package
+mkdir -p $DESTDIR/lib64
+ln -s lib64 lib
+mkdir -p "$DESTDIR"/usr/lib64/pkgconfig/
+DESTDIR=$DESTDIR ninja install -C $BUILDDIR 
+
+# Claim compatiblity with systemd and systemd-logind (thanks Alpine linux)
+ln -s libelogind.pc "$DESTDIR"/usr/lib64/pkgconfig/libsystemd.pc
+ln -s libelogind.pc "$DESTDIR"/usr/lib64/pkgconfig/libsystemd-login.pc
+
+ln -s elogind "$DESTDIR"/usr/include/systemd
+# Extra compatiblity support
+ln -s libelogind.so.0 "$DESTDIR"/usr/lib64/libsystemd.so.0
+ln -s libelogind.so.0 "$DESTDIR"/usr/lib64/libsystemd.so.0.35.0
+ln -s pam_elogind.so "$DESTDIR"/usr/lib64/security/pam_systemd.so
+install ../files/systemd.pc "$DESTDIR"/usr/lib64/pkgconfig/
+
+# Install headers from elogind
+install -Dm644 $SOURCEDIR/src/systemd/sd-id128.h "$DESTDIR"/usr/include/sd-id128.h
+install -Dm644 $SOURCEDIR/src/systemd/_sd-common.h "$DESTDIR"/usr/include/_sd-common.h
+
+# openrc service
+mkdir -p "${DESTDIR}"/etc/init.d
+install ../files/elogind.initd "${DESTDIR}"/etc/init.d/elogind
+
+# shadow system-auth.d file
+mkdir -p "${DESTDIR}"/etc/pam.d/system-auth.d/
+echo "session    include    elogind-user" > "${DESTDIR}"/etc/pam.d/system-auth.d/99-elogind
+
+# ld.so.conf
+mkdir -p "${DESTDIR}"/etc/ld.so.conf.d/
+echo "/lib64/elogind" > "${DESTDIR}"/etc/ld.so.conf.d/elogind.conf
+
+cd "$DESTDIR"/usr/lib64/pkgconfig/
+ln -s ../../../lib64/pkgconfig/libelogind.pc libelogind.pc
+

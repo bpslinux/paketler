@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+version="2.7.0"
+name="expat"
+depends="cmake"
+description="XML ayrıştırıcı kütüphanesi"
+source="https://github.com/libexpat/libexpat/releases/download/R_2_7_0/expat-${version}.tar.bz2"
+groups="dev.libs"
+
+# Paketin yükleneceği tasarlanan sistem konumu
+DESTDIR="$HOME/distro/rootfs"
+# Derleme konumu
+ROOTBUILDDIR="/tmp/kly/build"
+# Derleme yapılan paketin derleme konumun
+BUILDDIR="/tmp/kly/build/build-${name}-${version}"
+# paketin derleme talimatının verildiği konum
+PACKAGEDIR=$(pwd)
+# Paketin kaynak kodlarının olduğu konum
+SOURCEDIR="/tmp/kly/build/${name}-${version}"
+# initsetup
+# derleme dizini yoksa oluşturuluyor
+mkdir -p $ROOTBUILDDIR
+# içeriği temizleniyor
+rm -rf $ROOTBUILDDIR/*
+cd $ROOTBUILDDIR #dizinine geçiyoruz
+wget --no-check-certificate ${source}
+# isimde boşluk varsa silme işlemi yapılıyor
+for f in *\ *; do mv "$f" "${f// /}"; done
+dowloadfile=$(ls|head -1)
+filetype=$(file -b --extension $dowloadfile|cut -d'/' -f1)
+if [ "${filetype}" == "???" ]; then unzip ${dowloadfile}; else tar -xvf ${dowloadfile};fi
+director=$(find ./* -maxdepth 0 -type d)
+directorname=$(basename ${director})
+if [ "${directorname}" != "${name}-${version}" ]; then mv $directorname ${name}-${version};fi
+mkdir -p $BUILDDIR && mkdir -p $DESTDIR && cd $SOURCEDIR
+# setup
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=lib64 \
+        -DCMAKE_BUILD_TYPE=None \
+        -DEXPAT_BUILD_DOCS=false \
+        -W no-dev \
+        -B $BUILDDIR
+# build
+make -C $BUILDDIR
+# package
+make DESTDIR="$DESTDIR" install -C $BUILDDIR
+

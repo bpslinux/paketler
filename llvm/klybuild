@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+version="19.1.7"
+name="llvm"
+depends="libffi,xz-utils,libxml2,zlib"
+description="Düşük Seviyeli Sanal Makine"
+source="https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}/llvm-${version}.src.tar.xz"
+groups="sys.devel"
+
+# Paketin yükleneceği tasarlanan sistem konumu
+DESTDIR="$HOME/distro/rootfs"
+# Derleme konumu
+ROOTBUILDDIR="/tmp/kly/build"
+# Derleme yapılan paketin derleme konumun
+BUILDDIR="/tmp/kly/build/build-${name}-${version}"
+# paketin derleme talimatının verildiği konum
+PACKAGEDIR=$(pwd)
+# Paketin kaynak kodlarının olduğu konum
+SOURCEDIR="/tmp/kly/build/${name}-${version}"
+# initsetup
+# derleme dizini yoksa oluşturuluyor
+mkdir -p $ROOTBUILDDIR
+# içeriği temizleniyor
+rm -rf $ROOTBUILDDIR/*
+cd $ROOTBUILDDIR #dizinine geçiyoruz
+wget --no-check-certificate ${source}
+# isimde boşluk varsa silme işlemi yapılıyor
+for f in *\ *; do mv "$f" "${f// /}"; done
+dowloadfile=$(ls|head -1)
+filetype=$(file -b --extension $dowloadfile|cut -d'/' -f1)
+if [ "${filetype}" == "???" ]; then unzip ${dowloadfile}; else tar -xvf ${dowloadfile};fi
+director=$(find ./* -maxdepth 0 -type d)
+directorname=$(basename ${director})
+if [ "${directorname}" != "${name}-${version}" ]; then mv $directorname ${name}-${version};fi
+mkdir -p $BUILDDIR && mkdir -p $DESTDIR && cd $SOURCEDIR
+
+export PYTHON=/usr/bin/python3
+# setup
+cd /tmp/kly/build
+	
+wget --no-check-certificate https://github.com/llvm/llvm-project/releases/download/llvmorg-$version/cmake-$version.src.tar.xz
+wget --no-check-certificate https://github.com/llvm/llvm-project/releases/download/llvmorg-$version/third-party-$version.src.tar.xz
+tar -xf cmake-$version.src.tar.xz
+tar -xf third-party-$version.src.tar.xz
+
+mv cmake-$version.src cmake
+mv third-party-$version.src third-party
+
+cd $SOURCEDIR
+
+#cd build 
+
+cmake -B $BUILDDIR -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_DOCDIR=share/doc \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=/usr/lib64 \
+    -DCMAKE_SKIP_RPATH=ON \
+    -DLLVM_BINUTILS_INCDIR=/usr/include \
+    -DLLVM_BUILD_DOCS=OFF \
+    -DLLVM_BUILD_LLVM_DYLIB=ON \
+    -DLLVM_BUILD_TESTS=OFF \
+    -DLLVM_ENABLE_BINDINGS=OFF \
+    -DLLVM_ENABLE_FFI=ON \
+    -DLLVM_ENABLE_RTTI=ON \
+    -DLLVM_ENABLE_SPHINX=OFF \
+    -DLLVM_INCLUDE_BENCHMARKS=OFF \
+    -DLLVM_INSTALL_UTILS=ON \
+    -DLLVM_LINK_LLVM_DYLIB=ON \
+    -DLLVM_USE_PERF=ON \
+    -DLLVM_ENABLE_ZSTD=ON \
+    -DSPHINX_WARNINGS_AS_ERRORS=OFF
+
+python3 utils/lit/setup.py build
+# build
+ninja -C $BUILDDIR
+# package
+DESTDIR=$DESTDIR ninja -C $BUILDDIR install
+    
+python3 utils/lit/setup.py install --root="$DESTDIR"
+
+mkdir -p $DESTDIR/usr/lib64
+mv $DESTDIR/usr/lib/* $DESTDIR/usr/lib64/
+

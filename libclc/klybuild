@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+version="19.1.7"
+name="libclc"
+depends="clang,llvm"
+description="OpenCL C programlama dilinin kütüphane gereksinimleri"
+source="https://github.com/llvm/llvm-project/releases/download/llvmorg-${version}/libclc-${version}.src.tar.xz"
+groups="dev.libs"
+
+# Paketin yükleneceği tasarlanan sistem konumu
+DESTDIR="$HOME/distro/rootfs"
+# Derleme konumu
+ROOTBUILDDIR="/tmp/kly/build"
+# Derleme yapılan paketin derleme konumun
+BUILDDIR="/tmp/kly/build/build-${name}-${version}"
+# paketin derleme talimatının verildiği konum
+PACKAGEDIR=$(pwd)
+# Paketin kaynak kodlarının olduğu konum
+SOURCEDIR="/tmp/kly/build/${name}-${version}"
+# initsetup
+# derleme dizini yoksa oluşturuluyor
+mkdir -p $ROOTBUILDDIR
+# içeriği temizleniyor
+rm -rf $ROOTBUILDDIR/*
+cd $ROOTBUILDDIR #dizinine geçiyoruz
+wget --no-check-certificate ${source}
+# isimde boşluk varsa silme işlemi yapılıyor
+for f in *\ *; do mv "$f" "${f// /}"; done
+dowloadfile=$(ls|head -1)
+filetype=$(file -b --extension $dowloadfile|cut -d'/' -f1)
+if [ "${filetype}" == "???" ]; then unzip ${dowloadfile}; else tar -xvf ${dowloadfile};fi
+director=$(find ./* -maxdepth 0 -type d)
+directorname=$(basename ${director})
+if [ "${directorname}" != "${name}-${version}" ]; then mv $directorname ${name}-${version};fi
+mkdir -p $BUILDDIR && mkdir -p $DESTDIR && cd $SOURCEDIR
+# setup
+cmake -B $BUILDDIR -G Ninja \
+    	-DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DENABLE_RUNTIME_SUBNORMAL=OFF \
+        -DLLVM_SPIRV=/usr/bin/llvm-spirv
+# build
+ninja -C $BUILDDIR
+# package
+DESTDIR=$DESTDIR ninja -C $BUILDDIR install
+
