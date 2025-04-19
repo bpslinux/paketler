@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-version="1.1.5"
-name="libxdmcp"
-depends="xmlto,util-macros,xorgproto"
-description="X11 Ekran Yöneticisi Kontrol Protokolü Kütüphanesi"
-source="https://www.x.org/archive/individual/lib/libXdmcp-${version}.tar.xz"
+version="1.3.6"
+name="libXext"
+depends="xorgproto,libx11"
+description="X11 çeşitli uzantı kütüphanesi"
+source="https://www.x.org/archive/individual/lib/libXext-${version}.tar.xz"
 groups="x11.libs"
 
 # Paketin yükleneceği tasarlanan sistem konumu
@@ -33,8 +33,7 @@ directorname=$(basename ${director})
 if [ "${directorname}" != "${name}-${version}" ]; then mv $directorname ${name}-${version};fi
 mkdir -p $BUILDDIR && mkdir -p $DESTDIR && cd $SOURCEDIR
 # setup
-export PKG_CONFIG_PATH=/usr/lib/pkgconfig
-./configure --prefix=/usr --libdir=/usr/lib64/ --sysconfdir=/etc
+./configure --prefix=/usr --libdir=/usr/lib64/
 # build
 make
 # package

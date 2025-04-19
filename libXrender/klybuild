@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-version="3.1.1"
-name="audit"
-depends=""
-description="Servis Yöneticisi"
-source="https://github.com/linux-audit/audit-userspace/archive/refs/tags/v${version}.tar.gz"
-groups="sys.process"
+version="0.9.12"
+name="libXrender"
+depends="fontconfig"
+description="X için FreeType tabanlı yazı tipi kütüphanesi"
+source="https://www.x.org/archive/individual/lib/libXrender-${version}.tar.xz"
+groups="x11.libs"
 
 # Paketin yükleneceği tasarlanan sistem konumu
 DESTDIR="$HOME/distro/rootfs"
@@ -33,27 +33,10 @@ directorname=$(basename ${director})
 if [ "${directorname}" != "${name}-${version}" ]; then mv $directorname ${name}-${version};fi
 mkdir -p $BUILDDIR && mkdir -p $DESTDIR && cd $SOURCEDIR
 # setup
-cp $PACKAGEDIR/audit/auditd.initd /tmp/kly/build/auditd.initd
-cp $PACKAGEDIR/audit/auditd.confd /tmp/kly/build/auditd.confd
+./configure --prefix=/usr --libdir=/usr/lib64/
 
-autoreconf -fvi
-./configure --prefix=/usr \
-	--libdir=/usr/lib64/ \
-	--sysconfdir=/etc \
-        --disable-zos-remote \
-        --disable-listener \
-        --disable-systemd \
-        --disable-gssapi-krb5 \
-        --enable-shared=audit \
-	--with-arm \
-	--with-aarch64\
-	--without-python \
-	--without-python3 \
-	--with-libcap-ng=no 
 # build
-make
+make 
 # package
-make install DESTDIR=$DESTDIR
-install -Dm755 ../auditd.initd "$DESTDIR"/etc/init.d/auditd
-install -Dm755 ../auditd.confd "$DESTDIR"/etc/conf.d/auditd
+DESTDIR=$DESTDIR make install
 

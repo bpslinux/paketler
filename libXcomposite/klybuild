@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-version="1.8.11"
-name="libx11"
-depends="xtrans,xorg-util-macros,xorgproto"
-description="X11 istemci tarafı kütüphanesi"
-source="https://www.x.org/archive/individual/lib/libX11-${version}.tar.gz"
+version="0.4.6"
+name="libXcomposite"
+depends="libxrender"
+description="X.Org Xcomposite kütüphanesi"
+source="https://gitlab.freedesktop.org/xorg/lib/libxcomposite/-/archive/libXcomposite-${version}/libxcomposite-libXcomposite-${version}.tar.gz"
 groups="x11.libs"
 
 # Paketin yükleneceği tasarlanan sistem konumu
@@ -33,9 +33,11 @@ directorname=$(basename ${director})
 if [ "${directorname}" != "${name}-${version}" ]; then mv $directorname ${name}-${version};fi
 mkdir -p $BUILDDIR && mkdir -p $DESTDIR && cd $SOURCEDIR
 # setup
+autoreconf -fvi
 ./configure --prefix=/usr --libdir=/usr/lib64/
+
 # build
-make
+make 
 # package
-make install DESTDIR=$DESTDIR
+DESTDIR=$DESTDIR make install
 

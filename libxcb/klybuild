@@ -7,7 +7,7 @@ source="https://gitlab.freedesktop.org/xorg/lib/libxcb/-/archive/libxcb-${versio
 groups="x11.libs"
 
 # Paketin yükleneceği tasarlanan sistem konumu
-DESTDIR="$HOME/distro/rootfs"
+DESTDIR="$HOME/distro_dene/rootfs"
 # Derleme konumu
 ROOTBUILDDIR="/tmp/kly/build"
 # Derleme yapılan paketin derleme konumun

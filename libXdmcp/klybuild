@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-version="2.7.0"
-name="expat"
-depends="cmake"
-description="XML ayrıştırıcı kütüphanesi"
-source="https://github.com/libexpat/libexpat/releases/download/R_2_7_0/expat-${version}.tar.bz2"
-groups="dev.libs"
+version="1.1.5"
+name="libXdmcp"
+depends="util-macros,xorgproto"
+description="X11 Ekran Yöneticisi Kontrol Protokolü Kütüphanesi"
+source="https://www.x.org/archive/individual/lib/libXdmcp-${version}.tar.xz"
+groups="x11.libs"
 
 # Paketin yükleneceği tasarlanan sistem konumu
 DESTDIR="$HOME/distro/rootfs"
@@ -33,15 +33,10 @@ directorname=$(basename ${director})
 if [ "${directorname}" != "${name}-${version}" ]; then mv $directorname ${name}-${version};fi
 mkdir -p $BUILDDIR && mkdir -p $DESTDIR && cd $SOURCEDIR
 # setup
-
-cmake -DCMAKE_INSTALL_PREFIX=/usr \
-        -DCMAKE_INSTALL_LIBDIR=lib64 \
-        -DCMAKE_BUILD_TYPE=None \
-        -DEXPAT_BUILD_DOCS=false \
-        -W no-dev \
-        -B $BUILDDIR
+export PKG_CONFIG_PATH=/usr/lib/pkgconfig
+./configure --prefix=/usr --libdir=/usr/lib64/ --sysconfdir=/etc
 # build
-make -C $BUILDDIR
+make
 # package
-make DESTDIR="$DESTDIR" install -C $BUILDDIR
+make install DESTDIR=$DESTDIR
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-version="77-1"
-name="icu"
-depends="libxrender,libxfixes,libx11"
-description="Unicode kütüphanesi için uluslararası bileşenler"
-source="https://github.com/unicode-org/icu/archive/refs/tags/release-${version}.tar.gz"
-groups="dev.libs"
+version="6.0.0"
+name="libXfixes"
+depends="libxrender"
+description="X.Org Xfixes kütüphanesi"
+source="https://www.x.org/archive/individual/lib/libXfixes-${version}.tar.gz"
+groups="x11.libs"
 
 # Paketin yükleneceği tasarlanan sistem konumu
 DESTDIR="$HOME/distro/rootfs"
@@ -31,14 +31,12 @@ if [ "${filetype}" == "???" ]; then unzip ${dowloadfile}; else tar -xvf ${dowloa
 director=$(find ./* -maxdepth 0 -type d)
 directorname=$(basename ${director})
 if [ "${directorname}" != "${name}-${version}" ]; then mv $directorname ${name}-${version};fi
-mkdir -p $BUILDDIR && mkdir -p $DESTDIR && cd $SOURCEDIR/icu4c/source
+mkdir -p $BUILDDIR && mkdir -p $DESTDIR && cd $SOURCEDIR
 # setup
+./configure --prefix=/usr --libdir=/usr/lib64/
 
-autoreconf -fvi
-./configure --prefix=/usr \
-	--libdir=/usr/lib64/
 # build
-make
+make 
 # package
-make install DESTDIR=$DESTDIR
-chmod +x "$DESTDIR"/usr/bin/icu-config
+DESTDIR=$DESTDIR make install
+

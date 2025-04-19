@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-version="0.9.12"
-name="libxrender"
-depends="fontconfig,libxrender"
-description="X için FreeType tabanlı yazı tipi kütüphanesi"
-source="https://www.x.org/archive/individual/lib/libXrender-${version}.tar.xz"
+version="1.5.3"
+name="libXrandr"
+depends="libxrender"
+description="X.Org Xrandr kütüphanesi"
+source="https://www.x.org/archive/individual/lib/libXrandr-${version}.tar.xz"
 groups="x11.libs"
 
 # Paketin yükleneceği tasarlanan sistem konumu

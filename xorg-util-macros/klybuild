@@ -3,7 +3,6 @@ version="1.20.2"
 name="xorg-util-macros"
 depends=""
 description="Xorg yardımcı makrolar"
-	https://xorg.freedesktop.org/releases/individual/util/util-macros-1.20.2.tar.xz
 source="https://xorg.freedesktop.org/releases/individual/util/util-macros-${version}.tar.xz"
 groups="x11.misc"
 
@@ -23,7 +22,7 @@ mkdir -p $ROOTBUILDDIR
 # içeriği temizleniyor
 rm -rf $ROOTBUILDDIR/*
 cd $ROOTBUILDDIR #dizinine geçiyoruz
-wget --no-check-certificate ${source}
+wget ${source}
 # isimde boşluk varsa silme işlemi yapılıyor
 for f in *\ *; do mv "$f" "${f// /}"; done
 dowloadfile=$(ls|head -1)

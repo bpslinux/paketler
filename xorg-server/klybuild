@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 version="21.1.16"
 name="xorg-server"
-depends="xorg-util-macros,xorgproto,font-util"
+depends="xorg-util-macros,xorgproto,font-util,libmd,libbsd,libepoxy,libglvnd,libunwind,libfontenc,libxkbfile,xauth,xkbcomp,setxkbmap,freetype,libXfont2,libxcvt,mesa,libX11,libdrm,pixman,font-util,xcb-util-renderutil,xcb-util,xcb-util-image,xcb-util-wm,xcb-util-keysyms"
 description="X grafik sunucu"
 source="https://www.x.org/releases/individual/xserver/xorg-server-${version}.tar.xz"
 groups="x11.base"

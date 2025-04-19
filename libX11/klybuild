@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-version="1.0.12"
-name="libxau"
-depends="xorgproto"
-description="X11 Yetkilendirme Kütüphanesi"
-source="https://www.x.org/releases/individual/lib/libXau-${version}.tar.xz"
+version="1.8.11"
+name="libX11"
+depends="xtrans,xorg-util-macros,xorgproto"
+description="X11 istemci tarafı kütüphanesi"
+source="https://www.x.org/archive/individual/lib/libX11-${version}.tar.gz"
 groups="x11.libs"
 
 # Paketin yükleneceği tasarlanan sistem konumu
@@ -33,9 +33,9 @@ directorname=$(basename ${director})
 if [ "${directorname}" != "${name}-${version}" ]; then mv $directorname ${name}-${version};fi
 mkdir -p $BUILDDIR && mkdir -p $DESTDIR && cd $SOURCEDIR
 # setup
-meson setup $BUILDDIR --prefix=/usr --libdir=/usr/lib64/
+./configure --prefix=/usr --libdir=/usr/lib64/
 # build
-ninja -C $BUILDDIR
+make
 # package
-DESTDIR=$DESTDIR ninja install -C $BUILDDIR 
+make install DESTDIR=$DESTDIR
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-version="1.3.6"
-name="libxext"
-depends="xorgproto,libx11"
-description="X11 çeşitli uzantı kütüphanesi"
-source="https://www.x.org/archive/individual/lib/libXext-${version}.tar.xz"
+version="1.0.12"
+name="libXau"
+depends="xorgproto"
+description="X11 Yetkilendirme Kütüphanesi"
+source="https://www.x.org/releases/individual/lib/libXau-${version}.tar.xz"
 groups="x11.libs"
 
 # Paketin yükleneceği tasarlanan sistem konumu
@@ -33,9 +33,9 @@ directorname=$(basename ${director})
 if [ "${directorname}" != "${name}-${version}" ]; then mv $directorname ${name}-${version};fi
 mkdir -p $BUILDDIR && mkdir -p $DESTDIR && cd $SOURCEDIR
 # setup
-./configure --prefix=/usr --libdir=/usr/lib64/
+meson setup $BUILDDIR --prefix=/usr --libdir=/usr/lib64/
 # build
-make
+ninja -C $BUILDDIR
 # package
-make install DESTDIR=$DESTDIR
+DESTDIR=$DESTDIR ninja install -C $BUILDDIR 
 
